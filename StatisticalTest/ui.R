@@ -18,8 +18,30 @@ shinyUI(fluidPage(
       ),
       conditionalPanel(#only show this panel if two sample t-test is selected)
         condition = "input.TestType == 'two sample t-test'",
-        numericInput("data.test", "Input the path of test group data:", NA),
-        numericInput("data.control", "Input the path of control group data::", NA)
+        fileInput('testfile', 'upload test group data',
+                  accept = c(
+                    'text/csv',
+                    'text/comma-separated-values',
+                    'text/tab-separated-values',
+                    'text/plain',
+                    '.csv',
+                    '.tsv'
+                  )#,
+                  #helpText("Only 20 top lines are shown in the page")
+        ),
+        
+        tags$hr(),
+        checkboxInput('header', 'Header', TRUE),
+        radioButtons('sep', 'Separator',
+                     c(Comma=',',
+                       Semicolon=';',
+                       Tab='\t'),
+                     ','),
+        radioButtons('quote', 'Quote',
+                     c(None='',
+                       'Double Quote'='"',
+                       'Single Quote'="'"),
+                     '"')
       ),
       sliderInput("significanceLevel", "Threshold of Significance Level:", 
                   min=0, max=0.3, value=0.05, step = 0.01),
@@ -28,7 +50,9 @@ shinyUI(fluidPage(
       selectInput("valueToCalculate","Value to calculate",
                   choices = c('significant level(two-sided)','significant level(one-sided)','power','sample size')),
       br(),
-      actionButton("calculate", "Calculate")
+      actionButton("calculate", "Calculate",icon='Click to Calculate'),
+      helpText("You must click the above button to get the testing result, otherwise you will only see the sample output of default settings!")
+      
     ),
     
     mainPanel(
@@ -37,6 +61,7 @@ shinyUI(fluidPage(
       verbatimTextOutput("traditional_test"),
       h2("Winning probability"),
       verbatimTextOutput("win_prob"),
+      tableOutput('contents'),
       imageOutput("logo")
     )
   )
