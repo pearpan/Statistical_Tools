@@ -1,13 +1,17 @@
 #options(shiny.trace = TRUE)
 
 #check for and/or install dependencies
-need<-c("shiny") # some more should auto load...
+need<-c("shiny","googleVis") # some more should auto load...
 for(i in 1:length(need)){
   if(require(need[i], character.only = TRUE)==FALSE){install.packages(need[i]);library(need[i], character.only = TRUE)} else { library(need[i],character.only = TRUE)}
 }
 
+library(googleVis)
 library(shiny)
 
+
+# load code for custom functions
+#source("plot.R") # for using ggplot
 
 #data <- read.csv("dataset.csv",headers=T)
 
@@ -149,8 +153,4 @@ prob_winner <- function (post){
   k = ncol(post)
   w = table(factor(max.col(post), levels = 1:k))
   return(w/sum(w))
-}
-
-ES.h <- function (p1, p2){
-  2 * asin(sqrt(p1)) - 2 * asin(sqrt(p2))
 }
