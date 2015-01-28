@@ -1,17 +1,17 @@
 source('global.R')
 shinyServer(function(input, output){
   
-
   
-#   observe({
-#     if(input$calculate == 0){ #check if this is first run
-#       return()   
-#     }
-#     isolate({
-#       # Read inputs and save values to database here
-#     })
-#   })
-#   
+  
+  #   observe({
+  #     if(input$calculate == 0){ #check if this is first run
+  #       return()   
+  #     }
+  #     isolate({
+  #       # Read inputs and save values to database here
+  #     })
+  #   })
+  #   
   #logo
   output$logo <- renderImage({
     filename <- 'www/Li_avatar.PNG'
@@ -22,8 +22,7 @@ shinyServer(function(input, output){
     
   }, deleteFile = FALSE)
   
- 
-    
+  
   output$traditional_test <- renderPrint({    
     input$calculate
     isolate({
@@ -133,5 +132,5 @@ shinyServer(function(input, output){
     
   })
   
-
+  
 })

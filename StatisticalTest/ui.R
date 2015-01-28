@@ -5,7 +5,7 @@ shinyUI(fluidPage(
   
   # Sidebar with a slider input for number of observations
   sidebarLayout(
-
+    
     sidebarPanel(
       selectInput("TestType","Type of test",
                   c("two sample proportion test","two sample t-test")),
@@ -30,7 +30,7 @@ shinyUI(fluidPage(
       br(),
       actionButton("calculate", "Calculate")
     ),
-  
+    
     mainPanel(
       h2("traditional statistical test"),
       h3("Conclusion and details"),
@@ -41,5 +41,3 @@ shinyUI(fluidPage(
     )
   )
 ))#End of UI
-
-

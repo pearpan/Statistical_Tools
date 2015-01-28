@@ -154,3 +154,7 @@ prob_winner <- function (post){
   w = table(factor(max.col(post), levels = 1:k))
   return(w/sum(w))
 }
+
+ES.h <- function (p1, p2){
+  2 * asin(sqrt(p1)) - 2 * asin(sqrt(p2))
+}
