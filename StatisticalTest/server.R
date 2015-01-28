@@ -54,7 +54,12 @@ shinyServer(function(input, output){
         }else if(calcVal =='significant level(two-sided)'){
           results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr)   
           if(results$sig.level<sig.thres){
-            msg='Test group has significanly different in conversion rate!'
+            if(value1>value2){
+              msg='Test group has significanly higher conversion rate!'
+            }else{
+              msg='Test group has significanly lower conversion rate!'
+            }
+            
           }else{
             sample.needed <- ceiling(pwr.2p.test(h=h,power=pwr,sig.level=sig.thres)$n)
             msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group!')
