@@ -134,7 +134,7 @@ pwr.2p.test <- function (h = NULL, n = NULL, sig.level = 0.05, power = NULL,
                  alternative = alternative, method = METHOD), class = "power.htest")
 }
 
-sim_post <- function (x, n, alpha = 1, beta = 1, ndraws = 50000){
+sim_post <- function (x, n, alpha = 1, beta = 1, ndraws = 100000){
   k <- length(x)
   ans <- matrix(nrow = ndraws, ncol = k)
   no = n - x
@@ -172,8 +172,7 @@ win_prob_test <- function (x, n){
         if (length(ranks_above) > 0) {
           comparison_index = min(which(my_rank == min(ranks_above)))
           pt = prop.test(x = x[c(cur_index, comparison_index)], 
-                         n = n[c(cur_index, comparison_index)], conf.level = (1 - 
-                                                                                0.05))
+                         n = n[c(cur_index, comparison_index)], conf.level = (1 - 0.05))
           significance[cur_indices] = pt$p.value
           lower[cur_indices] = pt$conf.int[1]
           upper[cur_indices] = pt$conf.int[2]

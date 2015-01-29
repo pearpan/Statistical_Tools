@@ -116,7 +116,7 @@ shinyServer(function(input, output){
           k1 <- round(as.numeric(input$value1)*n1)
           k2 <- round(as.numeric(input$value2)*n2)
           betaPost = sim_post(c(k1,k2),c(n1,n2))
-          win.prob<-prob_winner(betaPost)
+          win.prob<-round(prob_winner(betaPost),2)
           #win.prob <- round(win_prob_test(c(k1,k2),c(n1,n2))$p_best,3)
           names(win.prob)=c('test','control')
           if(win.prob[1]>1-sig){
