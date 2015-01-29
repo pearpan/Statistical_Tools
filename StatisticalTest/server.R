@@ -117,10 +117,11 @@ shinyServer(function(input, output){
           k2 <- round(as.numeric(input$value2)*n2)
           betaPost = sim_post(c(k1,k2),c(n1,n2))
           win.prob<-prob_winner(betaPost)
+          #win.prob <- round(win_prob_test(c(k1,k2),c(n1,n2))$p_best,3)
           names(win.prob)=c('test','control')
-          if(win.prob[2]<sig){
+          if(win.prob[1]>1-sig){
             cat('Test group is the winner!')
-          }else if(win.prob[1]<sig){
+          }else if(win.prob[2]>1-sig){
             cat('Control group is the winner!')
           }else{
             cat('No winner under selected significant level.')
@@ -148,6 +149,26 @@ shinyServer(function(input, output){
       return()
     }else{
       inFile <- input$testfile
+      
+      if (is.null(inFile))
+        return(NULL)
+      
+      read.csv(inFile$datapath, header = input$header,
+               sep = input$sep, quote = input$quote)[1:20,]
+    }
+    
+  })
+  output$contents <- renderTable({
+    # input$file1 will be NULL initially. After the user selects
+    # and uploads a file, it will be a data frame with 'name',
+    # 'size', 'type', and 'datapath' columns. The 'datapath'
+    # column will contain the local filenames where the data can
+    # be found.
+    
+    if(input$TestType=='two sample proportion test'){
+      return()
+    }else{
+      inFile <- input$controlfile
       
       if (is.null(inFile))
         return(NULL)

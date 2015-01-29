@@ -27,7 +27,18 @@ shinyUI(fluidPage(
                     '.csv',
                     '.tsv'
                   )#,
-                  #helpText("Only 20 top lines are shown in the page")
+                  #helpText("Only top 20 lines are shown in the page")
+        ),
+        fileInput('controlfile', 'upload control group data',
+                  accept = c(
+                    'text/csv',
+                    'text/comma-separated-values',
+                    'text/tab-separated-values',
+                    'text/plain',
+                    '.csv',
+                    '.tsv'
+                  )#,
+                  #helpText("Only top 20 lines are shown in the page")
         ),
         
         tags$hr(),
@@ -57,7 +68,7 @@ shinyUI(fluidPage(
     
     mainPanel(
       h2("traditional statistical test"),
-      h3("Conclusion and details"),
+      h4("Conclusion and details"),
       verbatimTextOutput("traditional_test"),
       h2("Winning probability"),
       verbatimTextOutput("win_prob"),
