@@ -156,6 +156,17 @@ shinyServer(function(input, output){
         }
         cat(msg)
         cat('\n\n')
+        if(input$trim_upper>0 | input$trim_lower){
+          cat('Note: Based on your selection, \n')
+          if(input$trim_upper>0){
+            cat('top',input$trim_upper*100,'% data is removed,\n')
+          }
+          if(input$trim_lower>0){
+            cat('bottom',input$trim_lower*100,'% data is removed.\n')
+          } 
+        }
+        
+        cat('\n')
         cat('details:')
         print(results)
         cat('test group data statistics:\n')

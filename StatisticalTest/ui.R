@@ -18,6 +18,7 @@ shinyUI(fluidPage(
       ),
       conditionalPanel(#only show this panel if two sample t-test is selected)
         condition = "input.TestType == 'two sample t-test'",
+        helpText('If you do not upload any data, the ARPPU data provided by Prabha will be loaded'),
         fileInput('testfile', 'upload test group data',
                   accept = c(
                     'text/csv',
