@@ -83,6 +83,7 @@ shinyUI(fluidPage(
         h4('control data preview:'),
         tableOutput('controlcontents')
       ),
+      h4("Following are Li's avatar, avatar-buddy(ghost) and baby panda ^_^")
       imageOutput("logo")
     )
   )
