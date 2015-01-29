@@ -26,8 +26,7 @@ shinyUI(fluidPage(
                     'text/plain',
                     '.csv',
                     '.tsv'
-                  )#,
-                  #helpText("Only top 20 lines are shown in the page")
+                  )
         ),
         fileInput('controlfile', 'upload control group data',
                   accept = c(
@@ -37,23 +36,27 @@ shinyUI(fluidPage(
                     'text/plain',
                     '.csv',
                     '.tsv'
-                  )#,
-                  #helpText("Only top 20 lines are shown in the page")
+                  )
         ),
         
-        tags$hr(),
+        #tags$hr(),
         checkboxInput('header', 'Header', TRUE),
         radioButtons('sep', 'Separator',
                      c(Comma=',',
                        Semicolon=';',
                        Tab='\t'),
-                     ','),
+                     selected=','),
         radioButtons('quote', 'Quote',
                      c(None='',
                        'Double Quote'='"',
                        'Single Quote'="'"),
-                     '"')
+                     selected='"'),
+        sliderInput("trim_lower", "Trim extremely small values:", 
+                    min=0.0, max=0.1, value=0, step = 0.01,format='#%'),
+        sliderInput("trim_upper", "Trim extremely large values:", 
+                    min=0.0, max=0.1, value=0.01, step = 0.01,format='#%')
       ),
+      
       sliderInput("significanceLevel", "Threshold of Significance Level:", 
                   min=0, max=0.3, value=0.05, step = 0.01),
       sliderInput("samplePower", "Power:", 
@@ -67,12 +70,18 @@ shinyUI(fluidPage(
     ),
     
     mainPanel(
-      h2("traditional statistical test"),
+      h2("Traditional Statistical Test"),
       h4("Conclusion and details"),
       verbatimTextOutput("traditional_test"),
-      h2("Winning probability"),
+      h2("Winning Probability"),
       verbatimTextOutput("win_prob"),
-      tableOutput('contents'),
+      conditionalPanel(#only show this panel if two sample t-test is selected)
+        condition = "input.TestType == 'two sample t-test'",
+        h4('test data preview:'),
+        tableOutput('testcontents'),
+        h4('control data preview:'),
+        tableOutput('controlcontents')
+      ),
       imageOutput("logo")
     )
   )

@@ -64,17 +64,14 @@ pwr.2p2n.test <- function (h = NULL, n1 = NULL, n2 = NULL, sig.level = 0.05,
   }else if (is.null(n2)){
     n2 <- uniroot(function(n2) eval(p.body) - power, c(2 +  1e-10, 1e+10))$root
   } else if (is.null(sig.level)){
-    res <- class(try(sig.level <-uniroot(function(sig.level) eval(p.body) - power, c(1e-10, 1 - 1e-10))$root,T))
-    if(res=="try-error"){
-      sig.level <- 0
-    }
+    sig.level <-uniroot(function(sig.level) eval(p.body) - power, c(0, 1))$root
   }else{
     stop("internal error")
   } 
   
   METHOD <- "difference of proportion power calculation for binomial distribution (arcsine transformation)"
-  structure(list(h = h, n1 = n1, n2 = n2, sig.level = sig.level, 
-                 power = power, alternative = alternative, method = METHOD), class = "power.htest")
+  structure(list(h = h, n1 = n1, n2 = n2, sig.level = round(sig.level,3), 
+                 power = round(power,3), alternative = alternative, method = METHOD), class = "power.htest")
 }
 
 pwr.2p.test <- function (h = NULL, n = NULL, sig.level = 0.05, power = NULL, 
@@ -126,13 +123,141 @@ pwr.2p.test <- function (h = NULL, n = NULL, sig.level = 0.05, power = NULL,
   else if (is.null(n)) 
     n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 1e+10))$root
   else if (is.null(sig.level)) 
-    sig.level <- uniroot(function(sig.level) eval(p.body) - power, c(1e-10, 1 - 1e-10))$root
+    sig.level <- uniroot(function(sig.level) eval(p.body) - power, c(0, 1))$root
   else stop("internal error")
   NOTE <- "same sample sizes"
   METHOD <- "Difference of proportion power calculation for binomial distribution (arcsine transformation)"
-  structure(list(h = h, n = n, sig.level = sig.level, power = power, 
+  structure(list(h = h, n = n, sig.level = round(sig.level,3), power = round(power,3), 
                  alternative = alternative, method = METHOD), class = "power.htest")
 }
+
+pwr.t2n.test <- function (n1 = NULL, n2 = NULL, d = NULL, sig.level = 0.05, 
+                          power = NULL, alternative = c("two.sided", "less", "greater")){
+  if (sum(sapply(list(n1, n2, d, power, sig.level), is.null)) != 1) 
+    stop("exactly one of n1, n2, d, power, and sig.level must be NULL")
+  if (!is.null(sig.level) && !is.numeric(sig.level) || any(0 > sig.level | sig.level > 1)) 
+    stop(sQuote("sig.level"), " must be numeric in [0, 1]")
+  if (!is.null(power) && !is.numeric(power) || any(0 > power | power > 1)) 
+    stop(sQuote("power"), " must be numeric in [0, 1]")
+  if (!is.null(n1) && n1 < 2) 
+    stop("number of observations in the first group must be at least 2")
+  if (!is.null(n2) && n2 < 2) 
+    stop("number of observations in the second group must be at least 2")
+  alternative <- match.arg(alternative)
+  tsample <- 2
+  ttside <- switch(alternative, less = 1, two.sided = 2, greater = 3)
+  tside <- switch(alternative, less = 1, two.sided = 2, greater = 1)
+  if (tside == 2 && !is.null(d)) 
+    d <- abs(d)
+  if (ttside == 1) {
+    p.body <- quote({
+      nu <- n1 + n2 - 2
+      pt(qt(sig.level/tside, nu, lower = TRUE), nu, ncp = d * 
+           (1/sqrt(1/n1 + 1/n2)), lower = TRUE)
+    })
+  }
+  if (ttside == 2) {
+    p.body <- quote({
+      nu <- n1 + n2 - 2
+      qu <- qt(sig.level/tside, nu, lower = FALSE)
+      pt(qu, nu, ncp = d * (1/sqrt(1/n1 + 1/n2)), lower = FALSE) + 
+        pt(-qu, nu, ncp = d * (1/sqrt(1/n1 + 1/n2)), lower = TRUE)
+    })
+  }
+  if (ttside == 3) {
+    p.body <- quote({
+      nu <- n1 + n2 - 2
+      pt(qt(sig.level/tside, nu, lower = FALSE), nu, ncp = d * 
+           (1/sqrt(1/n1 + 1/n2)), lower = FALSE)
+    })
+  }
+  if (is.null(power)) 
+    power <- eval(p.body)
+  else if (is.null(n1)) 
+    n1 <- uniroot(function(n1) eval(p.body) - power, c(2 + 1e-10, 1e+10))$root
+  else if (is.null(n2)) 
+    n2 <- uniroot(function(n2) eval(p.body) - power, c(2 + 1e-10, 1e+10))$root
+  else if (is.null(d)) {
+    if (ttside == 2) {
+      d <- uniroot(function(d) eval(p.body) - power, c(1e-07, 10))$root
+    }
+    if (ttside == 1) {
+      d <- uniroot(function(d) eval(p.body) - power, c(-10, 5))$root
+    }
+    if (ttside == 3) {
+      d <- uniroot(function(d) eval(p.body) - power, c(-5, 10))$root
+    }
+  }
+  else if (is.null(sig.level)) 
+    sig.level <- uniroot(function(sig.level) eval(p.body) -  power, c(0, 1))$root
+  else stop("internal error")
+  METHOD <- c("t test power calculation")
+  structure(list(n1 = n1, n2 = n2, d = d, sig.level = round(sig.level,3), 
+                 power = round(power,3), alternative = alternative, method = METHOD), 
+            class = "power.htest")
+}
+
+pwr.t.test <- function (n = NULL, d = NULL, sig.level = 0.05, power = NULL, 
+                        type = c("two.sample", "one.sample", "paired"), 
+                        alternative = c("two.sided", "less", "greater")){
+  if (sum(sapply(list(n, d, power, sig.level), is.null)) !=  1) 
+    stop("exactly one of n, d, power, and sig.level must be NULL")
+  if (!is.null(sig.level) && !is.numeric(sig.level) || any(0 >  sig.level | sig.level > 1)) 
+    stop(sQuote("sig.level"), " must be numeric in [0, 1]")
+  if (!is.null(power) && !is.numeric(power) || any(0 > power |  power > 1)) 
+    stop(sQuote("power"), " must be numeric in [0, 1]")
+  type <- match.arg(type)
+  alternative <- match.arg(alternative)
+  tsample <- switch(type, one.sample = 1, two.sample = 2, paired = 1)
+  ttside <- switch(alternative, less = 1, two.sided = 2, greater = 3)
+  tside <- switch(alternative, less = 1, two.sided = 2, greater = 1)
+  if (tside == 2 && !is.null(d)) 
+    d <- abs(d)
+  if (ttside == 1) {
+    p.body <- quote({
+      nu <- (n - 1) * tsample
+      pt(qt(sig.level/tside, nu, lower = TRUE), nu, ncp = sqrt(n/tsample) * d, lower = TRUE)
+    })
+  }
+  if (ttside == 2) {
+    p.body <- quote({
+      nu <- (n - 1) * tsample
+      qu <- qt(sig.level/tside, nu, lower = FALSE)
+      pt(qu, nu, ncp = sqrt(n/tsample) * d, lower = FALSE) + 
+        pt(-qu, nu, ncp = sqrt(n/tsample) * d, lower = TRUE)
+    })
+  }
+  if (ttside == 3) {
+    p.body <- quote({
+      nu <- (n - 1) * tsample
+      pt(qt(sig.level/tside, nu, lower = FALSE), nu, ncp = sqrt(n/tsample) * d, lower = FALSE)
+    })
+  }
+  if (is.null(power)) 
+    power <- eval(p.body)
+  else if (is.null(n)) 
+    n <- uniroot(function(n) eval(p.body) - power, c(2 + 1e-10, 1e+10))$root
+  else if (is.null(d)) {
+    if (ttside == 2) {
+      d <- uniroot(function(d) eval(p.body) - power, c(1e-07, 10))$root
+    }
+    if (ttside == 1) {
+      d <- uniroot(function(d) eval(p.body) - power, c(-10, 5))$root
+    }
+    if (ttside == 3) {
+      d <- uniroot(function(d) eval(p.body) - power, c(-5, 10))$root
+    }
+  }
+  else if (is.null(sig.level)) 
+    sig.level <- uniroot(function(sig.level) eval(p.body) -  power, c(0, 1))$root
+  else stop("internal error")
+  NOTE <- switch(type, paired = "n is number of *pairs*",  two.sample = "n is number in *each* group", NULL)
+  METHOD <- paste(switch(type, one.sample = "One-sample", 
+                         two.sample = "Two-sample", paired = "Paired"), "t test power calculation")
+  structure(list(n = n, d = d, sig.level = round(sig.level,3), power = round(power,3), 
+                 alternative = alternative, note = NOTE, method = METHOD), class = "power.htest")
+}
+
 
 sim_post <- function (x, n, alpha = 1, beta = 1, ndraws = 100000){
   k <- length(x)
