@@ -159,10 +159,10 @@ shinyServer(function(input, output){
         if(input$trim_upper>0 | input$trim_lower){
           cat('Note: Based on your selection, \n')
           if(input$trim_upper>0){
-            cat('top',input$trim_upper*100,'% data is removed,\n')
+            cat('top',input$trim_upper*100,'% data are removed,\n')
           }
           if(input$trim_lower>0){
-            cat('bottom',input$trim_lower*100,'% data is removed.\n')
+            cat('bottom',input$trim_lower*100,'% data are removed.\n')
           } 
         }
         
