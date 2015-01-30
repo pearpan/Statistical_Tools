@@ -86,7 +86,7 @@ shinyServer(function(input, output){
       }else if(test_type=='two sample t-test'){
         inFile <- input$testfile
         if (is.na(inFile)){
-          testdata <- read.csv('./test_data.csv',header=TRUE)
+          testdata <- read.csv('data/test_data.csv',header=TRUE)
         }else{
           testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
         }
@@ -97,7 +97,7 @@ shinyServer(function(input, output){
         }
         inFile <- input$controlfile
         if (is.na(inFile)){
-          controldata <- read.csv('./control_data.csv',header=TRUE)
+          controldata <- read.csv('data/control_data.csv',header=TRUE)
         }else{
           controldata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
         }
@@ -209,7 +209,7 @@ shinyServer(function(input, output){
       }else if(test_type=='two sample t-test' & !calcVal %in% c('power','sample size') ){
         inFile <- input$testfile
         if (is.na(inFile)){
-          testdata <- read.csv('./test_data.csv',header=TRUE)
+          testdata <- read.csv('data/test_data.csv',header=TRUE)
         }else{
           testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
         }
@@ -218,7 +218,7 @@ shinyServer(function(input, output){
         }
         inFile <- input$controlfile
         if (is.na(inFile)){
-          controldata <- read.csv('./control_data.csv',header=TRUE)
+          controldata <- read.csv('data/control_data.csv',header=TRUE)
         }else{
           controldata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
         }
@@ -269,7 +269,7 @@ shinyServer(function(input, output){
     }else{
       inFile <- input$testfile
       if (is.na(inFile)){
-        head(testdata <- read.csv('./test_data.csv',header=TRUE))
+        head(testdata <- read.csv('data/test_data.csv',header=TRUE))
       }else{
         head(testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote))
       }
@@ -292,7 +292,7 @@ shinyServer(function(input, output){
       inFile <- input$controlfile
       
       if (is.na(inFile)){
-        head(controldata<-read.csv('./control_data.csv',header=TRUE))
+        head(controldata<-read.csv('data/control_data.csv',header=TRUE))
       }else{
         head(controldata<-read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote))
       }      
