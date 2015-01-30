@@ -91,9 +91,7 @@ shinyServer(function(input, output){
           testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
         }
         if(ncol(testdata)>1){
-          cat('Input test group data has more than one column!\n')
-          cat('Please load a dataset with only 1 column/variable. \n')
-          return
+          stop('Input test group data has more than one column! Please load a dataset with only 1 column/variable.')
         }
         inFile <- input$controlfile
         if (is.null(inFile)){
@@ -102,8 +100,7 @@ shinyServer(function(input, output){
           controldata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
         }
         if(ncol(controldata)>1){
-          cat('Input control group data has more than one column!\n')
-          cat('Please load a dataset with only 1 column/variable. \n')
+          stop('Input control group data has more than one column! Please load a dataset with only 1 column/variable.')
           return
         }
         x <- testdata[,1]
