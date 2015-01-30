@@ -85,7 +85,7 @@ shinyServer(function(input, output){
         results
       }else if(test_type=='two sample t-test'){
         inFile <- input$testfile
-        if (is.na(inFile|is.null(inFile))){
+        if (is.na(inFile)|is.null(inFile)){
           testdata <- read.csv('data/test_data.csv',header=TRUE)
         }else{
           testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
