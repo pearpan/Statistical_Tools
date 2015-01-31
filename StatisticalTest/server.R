@@ -266,7 +266,7 @@ shinyServer(function(input, output){
     }else{
       inFile <- input$testfile
       if (is.null(inFile)){
-        head(testdata <- read.csv('data/test_data.csv',header=TRUE))
+        head(testdata <- read.csv('data/test_data.csv',header=TRUE,nrows=10))
       }else{
         head(testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote))
       }
@@ -289,7 +289,7 @@ shinyServer(function(input, output){
       inFile <- input$controlfile
       
       if (is.null(inFile)){
-        head(controldata<-read.csv('data/control_data.csv',header=TRUE))
+        head(controldata<-read.csv('data/control_data.csv',header=TRUE,nrows=10))
       }else{
         head(controldata<-read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote))
       }      
