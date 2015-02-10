@@ -3,7 +3,7 @@ shinyServer(function(input, output){
   
   #logo
   output$logo <- renderImage({
-    filename <- 'www/lottery_girls.jpg'
+    filename <- 'www/Li_avatar.PNG'
     list(src = filename,
          width = 272,
          height = 153,
