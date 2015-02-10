@@ -44,9 +44,11 @@ shinyServer(function(input, output){
           results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr)   
           if(results$sig.level<sig.thres){
             if(value1>value2){
-              msg='Test group has significanly higher conversion rate!'
+              lift <- round((value1-value2)/value2,1)
+              msg=paste('Test group has significanly higher conversion rate! \n The lift is',lift,'%')
             }else{
-              msg='Test group has significanly lower conversion rate!'
+              drop <- round((value2-value1)/value2,1)
+              msg=paste('Test group has significanly lower conversion rate! \n The drop is',drop,'%')
             }
             
           }else{
