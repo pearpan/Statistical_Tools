@@ -44,11 +44,19 @@ shinyServer(function(input, output){
           results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr)   
           if(results$sig.level<sig.thres){
             if(value1>value2){
+<<<<<<< HEAD
               lift <- round((value1-value2)/value2,1)
               msg=paste('Test group has significanly higher conversion rate! \n The lift is',lift,'%')
             }else{
               drop <- round((value2-value1)/value2,1)
               msg=paste('Test group has significanly lower conversion rate! \n The drop is',drop,'%')
+=======
+              lift <- round((value1-value2)/value2*100,1)
+              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%')
+            }else{
+              drop <- round((value2-value1)/value2*100,1)
+              msg=paste('Test group has significantly lower conversion rate! \n The drop is',drop,'%')
+>>>>>>> origin/master
             }
             
           }else{
@@ -120,9 +128,9 @@ shinyServer(function(input, output){
           results<-pwr.t2n.test(n1 = n1,n2 = n2,d = d,sig.level=sig, power=pwr)
           if(results$sig.level<sig.thres){
             if(d > 0){
-              msg='Test group has significanly higher average value!'
+              msg='Test group has significantly higher average value!'
             }else{
-              msg='Test group has significanly lower average value!'
+              msg='Test group has significantly lower average value!'
             }            
           }else{
             sample.needed <- ceiling(pwr.t.test(d=d,power=pwr,sig.level=sig.thres)$n)
