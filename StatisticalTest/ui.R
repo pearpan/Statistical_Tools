@@ -65,7 +65,7 @@ shinyUI(fluidPage(
       selectInput("valueToCalculate","Value to calculate",
                   choices = c('significant level(two-sided)','significant level(one-sided)','power','sample size')),
       br(),
-      actionButton("calculate", "Calculate",icon='Click to Calculate'),
+      actionButton("calculate", "Click to Calculate"),
       helpText("You must click the above button to get the testing result, otherwise you will only see the sample output of default settings!")
       
     ),

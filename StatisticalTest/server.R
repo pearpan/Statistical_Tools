@@ -119,9 +119,11 @@ shinyServer(function(input, output){
           results<-pwr.t2n.test(n1 = n1,n2 = n2,d = d,sig.level=sig, power=pwr)
           if(results$sig.level<sig.thres){
             if(d > 0){
-              msg='Test group has significantly higher average value!'
+              lift <- round((mean(x)-mean(y))/mean(y)*100,1)
+              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%')
             }else{
-              msg='Test group has significantly lower average value!'
+              drop <- round((mean(y)-mean(x))/mean(y)*100,1)
+              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%')       
             }            
           }else{
             sample.needed <- ceiling(pwr.t.test(d=d,power=pwr,sig.level=sig.thres)$n)
