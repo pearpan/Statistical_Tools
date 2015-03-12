@@ -120,10 +120,10 @@ shinyServer(function(input, output){
           if(results$sig.level<sig.thres){
             if(d > 0){
               lift <- round((mean(x)-mean(y))/mean(y)*100,1)
-              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%')
+              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%')
             }else{
               drop <- round((mean(y)-mean(x))/mean(y)*100,1)
-              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%')       
+              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%')       
             }            
           }else{
             sample.needed <- ceiling(pwr.t.test(d=d,power=pwr,sig.level=sig.thres)$n)
