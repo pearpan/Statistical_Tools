@@ -14,7 +14,8 @@ shinyUI(fluidPage(
                   'text/tab-separated-values',
                   'text/plain',
                   '.csv',
-                  '.tsv'
+                  '.tsv',
+                  '.txt'
                 )
       ),
       
@@ -22,7 +23,8 @@ shinyUI(fluidPage(
       radioButtons('sep', 'Separator',
                    c(Comma=',',
                      Semicolon=';',
-                     Tab='\t'),
+                     Tab='\t',
+                     Space=' '),
                    selected=','),
       radioButtons('quote', 'Quote',
                    c(None='',
@@ -32,8 +34,9 @@ shinyUI(fluidPage(
       uiOutput("response"),
       uiOutput("variables"),
       br(),
+      checkboxInput('weights', 'Over sampling rare events?', FALSE),
       actionButton("calculate", "Click to Calculate"),
-      helpText("You must click the above button to get the testing result, otherwise you will only see the sample output of default settings!")
+      helpText("You must click the above button to start the variable selection process!")
       
     ),
     
@@ -44,10 +47,12 @@ shinyUI(fluidPage(
                  tableOutput('preview'), 
                  h4('you picked following variables:'),
                  tableOutput('selected')),
-        tabPanel("Summary", verbatimTextOutput("summary"))
+        tabPanel("Summary", 
+                 tableOutput("summary_table"),
+                 plotOutput("summary_plot")
+                 )
         
-      )    
-      
+      )          
     )
   )
 ))#End of UI
