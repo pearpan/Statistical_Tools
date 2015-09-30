@@ -1,7 +1,7 @@
 shinyUI(fluidPage(
   
   # Application title
-  titlePanel("Welcome to DI statistical testing Lab (beta 1.0)"),
+  titlePanel("Welcome to Li Pan's statistical testing Lab (beta 1.0)"),
   
   # Sidebar with a slider input for number of observations
   sidebarLayout(
@@ -18,7 +18,7 @@ shinyUI(fluidPage(
       ),
       conditionalPanel(#only show this panel if two sample t-test is selected)
         condition = "input.TestType == 'two sample t-test'",
-        helpText('If you do not upload any data, the ARPPU data provided by Prabha will be loaded'),
+        helpText('If you do not upload any data, an example data will be loaded'),
         fileInput('testfile', 'upload test group data',
                   accept = c(
                     'text/csv',
@@ -83,8 +83,8 @@ shinyUI(fluidPage(
         h4('control data preview:'),
         tableOutput('controlcontents')
       ),
-      h4("If we win the lottery..."),
-      imageOutput("logo")
+      #h4("If we win the lottery..."),
+      #imageOutput("logo")
     )
   )
 ))#End of UI
