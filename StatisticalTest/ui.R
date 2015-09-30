@@ -82,7 +82,7 @@ shinyUI(fluidPage(
         tableOutput('testcontents'),
         h4('control data preview:'),
         tableOutput('controlcontents')
-      ),
+      )#,
       #h4("If we win the lottery..."),
       #imageOutput("logo")
     )
