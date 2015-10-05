@@ -242,7 +242,7 @@ shinyServer(function(input, output){
           win.y <- mean(xsample)<mean(ysample)
           c(win.x,win.y)
         })
-        win.prob <- round(rowSums(result)/10000,2)   
+        win.prob <- round(rowSums(result)/resample.count,2)   
         names(win.prob)=c('test','control')
         sig <- as.numeric(input$significanceLevel)
         if(win.prob[1]>1-sig){
