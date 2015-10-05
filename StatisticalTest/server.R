@@ -230,7 +230,11 @@ shinyServer(function(input, output){
         y <- controldata[,1]
         x <- x[x>=quantile(x,input$trim_lower) & x<=quantile(x,1-input$trim_upper)]
         y <- y[y>=quantile(y,input$trim_lower) & y<=quantile(y,1-input$trim_upper)]
-        result<-sapply(1:10000,function(z){
+        resample.count <- 10000
+        if(max(length(x),length(y))>500000){
+          resample.count <- max(floor(10000*500000/max(length(x),length(y))),500)
+        }
+        result<-sapply(1:resample.count,function(z){
           xsample <- sample(x,length(x),replace = TRUE)
           ysample <- sample(y,length(y),replace = TRUE)
           win.x <- mean(xsample)>mean(ysample)
