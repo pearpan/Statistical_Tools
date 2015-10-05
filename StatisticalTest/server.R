@@ -234,7 +234,7 @@ shinyServer(function(input, output){
         if(max(length(x),length(y))>500000){
           resample.count <- max(floor(10000*500000/max(length(x),length(y))),500)
         }
-        cat('resample size:',resample.count,'\n')
+        #cat('resample size:',resample.count,'\n')
         result<-sapply(1:resample.count,function(z){
           xsample <- sample(x,length(x),replace = TRUE)
           ysample <- sample(y,length(y),replace = TRUE)
