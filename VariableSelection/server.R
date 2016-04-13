@@ -1,5 +1,5 @@
 source('global.R')
-options(shiny.maxRequestSize=1024^3)
+options(shiny.maxRequestSize=1024^4)
 shinyServer(function(input, output){
   
   #logo
