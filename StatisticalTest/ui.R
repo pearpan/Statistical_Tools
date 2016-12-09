@@ -8,7 +8,8 @@ shinyUI(fluidPage(
     
     sidebarPanel(
       selectInput("TestType","Type of test",
-                  c("two sample proportion test","two sample t-test","power analysis")),
+                  c("two sample proportion test","two sample t-test",
+                    "power analysis: proportion test","power analysis: t-test")),
       conditionalPanel(#only show this panel if proportional test is selected)
         condition = "input.TestType == 'two sample proportion test'",
         numericInput("n1", "sample size of test group:", 10000, min = 20),
@@ -18,12 +19,13 @@ shinyUI(fluidPage(
         #numericInput(inputId="ES", label="Input effect size:",value=0.1)
       ),
       conditionalPanel(#only show this panel if proportional test is selected)
-        condition = "input.TestType == 'power analysis'",
-        numericInput(inputId="ES", label="Input effect size:",value=0.1),
-        radioButtons("PwrTestType","pick a test type",
-                     choices = c('proportion test',
-                                 't test'
-                     ))
+        condition = "input.TestType == 'power analysis: proportion test'",
+        numericInput("p1", "test group converstion rate (input a value from 0 to 1):",0.11,min=0,max=1),
+        numericInput("p2", "control group conversion rate (input a value from 0 to 1):",0.1,min=0,max=1)
+      ),
+      conditionalPanel(#only show this panel if t-test is selected)
+        condition = "input.TestType == 'power analysis: t-test'",
+        numericInput(inputId="ES", label="Input effect size:",value=0.1)
       ),
       conditionalPanel(#only show this panel if two sample t-test is selected)
         condition = "input.TestType == 'two sample t-test'",
@@ -67,8 +69,10 @@ shinyUI(fluidPage(
                     min=0.0, max=0.1, value=0.01, step = 0.01,format='#%')
       ),
       
-      sliderInput("significanceLevel", "Threshold of Significance Level:", 
-                  min=0, max=0.3, value=0.05, step = 0.01),
+      #sliderInput("significanceLevel", "Threshold of Significance Level:", 
+      #            min=0, max=0.3, value=0.05, step = 0.01),
+      numericInput("significanceLevel", "Threshold of Significance Level:", 
+                   min=0, max=0.3, value=0.05),
       sliderInput("samplePower", "Power:", 
                   min=0, max=1, value=0.8, step = 0.05),
       radioButtons("valueToCalculate","one or two sides?",
@@ -88,7 +92,7 @@ shinyUI(fluidPage(
       h4("Conclusion and details"),
       verbatimTextOutput("traditional_test"),
       conditionalPanel(#do not show winning prob for power analysis
-        condition="input.TestType != 'power analysis'",
+        condition="input.TestType != 'power analysis: proportion test' && input.TestType != 'power analysis: t-test' ",
         h2("Winning Probability"),
         verbatimTextOutput("win_prob")
       ),

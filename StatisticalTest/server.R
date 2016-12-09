@@ -22,6 +22,8 @@ shinyServer(function(input, output){
       n2 <- as.numeric(input$n2)
       value1 <- as.numeric(input$value1)
       value2 <- as.numeric(input$value2)
+      p1 <- as.numeric(input$p1)
+      p2 <- as.numeric(input$p2)
       ES <- as.numeric(input$ES)
       pwr <- as.numeric(input$samplePower)
       test_type <- input$TestType
@@ -49,10 +51,10 @@ shinyServer(function(input, output){
           if(results$p.value<sig.thres){
             if(value1>value2){
               lift <- round((value1-value2)/value2*100,1)
-              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%\n P-value is',results$p.value)
+              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%\n P-value is',round(results$p.value,3))
             }else{
               drop <- round((value2-value1)/value2*100,1)
-              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%\n P-value is',results$p.value)              
+              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%\n P-value is',round(results$p.value,3))              
             }          
           }else{
             sample.needed <- ceiling(pwr.2p.test(h=h,power=pwr,sig.level=sig.thres)$n)
@@ -65,7 +67,7 @@ shinyServer(function(input, output){
             results <- prop.test(x=c(round(value1*n1),round(value2*n2)),n=c(n1,n2),conf.level=1-sig.thres,alternative="greater")
             if(results$p.value<sig.thres){
               lift <- round((value1-value2)/value2*100,1)
-              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%\n P-value is',results$p.value)
+              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%\n P-value is',round(results$p.value,3))
             }else{
               sample.needed <- ceiling(pwr.2p.test(h=h,power=pwr,sig.level=sig.thres,alternative = 'greater')$n)
               msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
@@ -75,7 +77,7 @@ shinyServer(function(input, output){
             results <- prop.test(x=c(round(value1*n1),round(value2*n2)),n=c(n1,n2),conf.level=1-sig.thres,alternative="less")
             if(results$p.value<sig.thres){
               drop <- round((value2-value1)/value2*100,1)
-              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%\n P-value is',results$p.value)              
+              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%\n P-value is',round(results$p.value,3))              
             }else{
               sample.needed <- ceiling(pwr.2p.test(h=h,power=pwr,sig.level=sig.thres,alternative = 'less')$n)
               msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
@@ -97,7 +99,7 @@ shinyServer(function(input, output){
         if (is.null(inFile)){
           testdata <- read.csv('data/test_data.csv',header=TRUE)
         }else{
-          testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
+          testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote,na.strings = "(null)")
         }
         if(ncol(testdata)>1){
           stop('Input test group data has more than one column! Please load a dataset with only 1 column/variable.')
@@ -106,7 +108,7 @@ shinyServer(function(input, output){
         if (is.null(inFile)){
           controldata <- read.csv('data/control_data.csv',header=TRUE)
         }else{
-          controldata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
+          controldata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote,na.strings = "(null)")
         }
         if(ncol(controldata)>1){
           stop('Input control group data has more than one column! Please load a dataset with only 1 column/variable.')
@@ -129,10 +131,10 @@ shinyServer(function(input, output){
           if(results$p.value<sig.thres){
             if(d > 0){
               lift <- round((mean(x)-mean(y))/mean(y)*100,1)
-              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%. \n P-value is',results$p.value)
+              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%. \n P-value is',round(results$p.value,3))
             }else{
               drop <- round((mean(y)-mean(x))/mean(y)*100,1)
-              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%. \n P-value is',results$p.value)       
+              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%. \n P-value is',round(results$p.value,3))       
             }            
           }else{
             sample.needed <- ceiling(pwr.t.test(d=d,power=pwr,sig.level=sig.thres)$n)
@@ -144,7 +146,7 @@ shinyServer(function(input, output){
             results <- t.test(x,y,conf.level=1-sig.thres,alternative = "greater")
             if(results$p.value<sig.thres){
               lift <- round((mean(x)-mean(y))/mean(y)*100,1)
-              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%. \n P-value is',results$p.value)
+              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%. \n P-value is',round(results$p.value,3))
             }else{
               sample.needed <- ceiling(pwr.t.test(d=d,power=pwr,sig.level=sig.thres,alternative = 'greater')$n)
               msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
@@ -154,7 +156,7 @@ shinyServer(function(input, output){
             results <- t.test(x,y,conf.level=1-sig.thres,alternative = "less")
             if(results$p.value<sig.thres){
               drop <- round((mean(y)-mean(x))/mean(y)*100,1)
-              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%. \n P-value is',results$p.value)       
+              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%. \n P-value is',round(results$p.value,3))       
             }else{
               sample.needed <- ceiling(pwr.t.test(d = d,power=pwr,sig.level=sig.thres,alternative = 'less')$n)
               msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
@@ -186,32 +188,33 @@ shinyServer(function(input, output){
         print(summary(x))
         cat('control group data statistics:\n')
         print(summary(y))        
-      }else if(test_type=='power analysis'){
-        if(power_test == 'proportion test'){
-          if(calcVal =='significant level(two-sided)'){
-            results <- pwr.2p.test(h =ES , sig.level = sig.thres, power = pwr, alternative = 'two.sided')
-          }else if(calcVal =='significant level(one-sided)'){
-            if(ES>0){
-              results <- pwr.2p.test(h =ES , sig.level = sig.thres, power = pwr, alternative = 'greater')
-            }else{
-              results <- pwr.2p.test(h =ES , sig.level = sig.thres, power = pwr, alternative = 'less')
-            }
-          }
-          msg=paste('Sample size required for both test and control group is',ceiling(results$n))
-        }else if(power_test=='t test'){
-          if(calcVal =='significant level(two-sided)'){
-            results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'two.sided')
-          }else if(calcVal =='significant level(one-sided)'){
-            if(ES>0){
-              results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'greater')
-            }else{
-              results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'less')
-            }
-            msg=paste('Sample size required for both test and control group is',ceiling(results$n))
+      }else if(test_type=='power analysis: proportion test'){
+        h = 2 * asin(sqrt(p1)) - 2 * asin(sqrt(p2))
+        if(calcVal =='significant level(two-sided)'){
+          results <- pwr.2p.test(h =h , sig.level = sig.thres, power = pwr, alternative = 'two.sided')
+        }else if(calcVal =='significant level(one-sided)'){
+          if(h>0){
+            results <- pwr.2p.test(h =h , sig.level = sig.thres, power = pwr, alternative = 'greater')
+          }else{
+            results <- pwr.2p.test(h =h , sig.level = sig.thres, power = pwr, alternative = 'less')
           }
         }
+        msg=paste('Sample size required for both test and control group is',ceiling(results$n))
+        cat(msg)
+      }else if(test_type=='power analysis: t-test'){
+        if(calcVal =='significant level(two-sided)'){
+          results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'two.sided')
+        }else if(calcVal =='significant level(one-sided)'){
+          if(ES>0){
+            results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'greater')
+          }else{
+            results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'less')
+          }
+        }
+        msg=paste('Sample size required for both test and control group is',ceiling(results$n))
         cat(msg)
       }
+      
     })
   })#end of traditional statistical test
   
@@ -247,7 +250,7 @@ shinyServer(function(input, output){
         if (is.null(inFile)){
           testdata <- read.csv('data/test_data.csv',header=TRUE)
         }else{
-          testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
+          testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote,na.strings = "(null)")
         }
         if(ncol(testdata)>1){
           stop('Input test group data has more than one column! Please load a dataset with only 1 column/variable.')
@@ -256,7 +259,7 @@ shinyServer(function(input, output){
         if (is.null(inFile)){
           controldata <- read.csv('data/control_data.csv',header=TRUE)
         }else{
-          controldata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote)
+          controldata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote,na.strings = "(null)")
         }
         if(ncol(controldata)>1){
           stop('Input control group data has more than one column! Please load a dataset with only 1 column/variable.')
@@ -312,7 +315,7 @@ shinyServer(function(input, output){
       if (is.null(inFile)){
         head(testdata <- read.csv('data/test_data.csv',header=TRUE,nrows=10))
       }else{
-        head(testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote))
+        head(testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote,na.strings = "(null)"))
       }
       
       
@@ -335,7 +338,7 @@ shinyServer(function(input, output){
       if (is.null(inFile)){
         head(controldata<-read.csv('data/control_data.csv',header=TRUE,nrows=10))
       }else{
-        head(controldata<-read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote))
+        head(controldata<-read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote,na.strings = "(null)"))
       }      
     }
     
