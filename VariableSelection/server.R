@@ -39,7 +39,7 @@ shinyServer(function(input, output){
   output$variables <- renderUI({    
     if (identical(Dataset(), '') || identical(Dataset(),data.frame())) return(NULL)
     cols <- names(Dataset())
-    selectInput("independent.variables", "Select all the variables of interests:",choices=cols, multiple=T)     
+    selectInput("independent.variables", "Select all the variables of interests:",choices=cols,selected = cols, multiple=T)     
   })
   
   output$selected <- renderTable({

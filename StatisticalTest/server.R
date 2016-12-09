@@ -22,17 +22,19 @@ shinyServer(function(input, output){
       n2 <- as.numeric(input$n2)
       value1 <- as.numeric(input$value1)
       value2 <- as.numeric(input$value2)
+      ES <- as.numeric(input$ES)
       pwr <- as.numeric(input$samplePower)
       test_type <- input$TestType
       calcVal <- input$valueToCalculate
+      power_test <- input$PwrTestType
       
       if(calcVal=='sample size'){
         n1 <- NULL
         n2 <- NULL
         sig <- sig.thres
-      }else if(calcVal =='power'){
-        pwr <- NULL
-        sig <- sig.thres
+        #}else if(calcVal =='power'){
+        #  pwr <- NULL
+        #  sig <- sig.thres
       }
       
       if(test_type=='two sample proportion test'){
@@ -42,49 +44,54 @@ shinyServer(function(input, output){
           msg<-paste('No difference between test and control group at all!')
           
         }else if(calcVal =='significant level(two-sided)'){
-          results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr)   
-          if(results$sig.level<sig.thres){
+          #results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = 0)#for sig test
+          results <- prop.test(x=c(round(value1*n1),round(value2*n2)),n=c(n1,n2),conf.level=1-sig.thres,alternative="two.sided")
+          if(results$p.value<sig.thres){
             if(value1>value2){
               lift <- round((value1-value2)/value2*100,1)
-              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%')
+              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%\n P-value is',results$p.value)
             }else{
               drop <- round((value2-value1)/value2*100,1)
-              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%')              
+              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%\n P-value is',results$p.value)              
             }          
           }else{
             sample.needed <- ceiling(pwr.2p.test(h=h,power=pwr,sig.level=sig.thres)$n)
-            msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group!')
+            msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
           }
           
         }else if(calcVal =='significant level(one-sided)'){
           if(h>0){
-            results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr,alternative = 'greater')
-            if(results$sig.level<sig.thres){
-              msg='Test group has significantly higher conversion rate'
+            #results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = 0,alternative = 'greater')
+            results <- prop.test(x=c(round(value1*n1),round(value2*n2)),n=c(n1,n2),conf.level=1-sig.thres,alternative="greater")
+            if(results$p.value<sig.thres){
+              lift <- round((value1-value2)/value2*100,1)
+              msg=paste('Test group has significantly higher conversion rate! \n The lift is',lift,'%\n P-value is',results$p.value)
             }else{
               sample.needed <- ceiling(pwr.2p.test(h=h,power=pwr,sig.level=sig.thres,alternative = 'greater')$n)
-              msg=paste('There is no siginificant increase in test group.\n Require',sample.needed,'samples in both test and control group!')
+              msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
             }
           }else{
-            results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr,alternative = 'less')
-            if(results$sig.level<sig.thres){
-              msg='Test group has significantly lower conversion rate'
+            #results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = 0,alternative = 'less')
+            results <- prop.test(x=c(round(value1*n1),round(value2*n2)),n=c(n1,n2),conf.level=1-sig.thres,alternative="less")
+            if(results$p.value<sig.thres){
+              drop <- round((value2-value1)/value2*100,1)
+              msg=paste('Test group has siginificantly lower conversion rate! \n The drop is',drop,'%\n P-value is',results$p.value)              
             }else{
               sample.needed <- ceiling(pwr.2p.test(h=h,power=pwr,sig.level=sig.thres,alternative = 'less')$n)
-              msg=paste('There is no siginificant decrease in test group. \n Require',sample.needed,'samples in both test and control group!')
+              msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
             }
           }      
-        }else if(calcVal =='power'){
-          results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr)
-          msg=paste('The power is',results$power)
-        }else if(calcVal =='sample size'){
-          results <- pwr.2p.test(h =h , sig.level = sig, power = pwr)
-          msg=paste('Sample size required for both test and control group is',ceiling(results$n))
+          #}else if(calcVal =='power'){
+          #  results <- pwr.2p2n.test(h =h , n1 =n1 , n2=n2, sig.level = sig, power = pwr)
+          #  msg=paste('The power is',results$power)
+          #}else if(calcVal =='sample size'){
+          #  results <- pwr.2p.test(h =ES , sig.level = sig, power = pwr)
+          #  msg=paste('Sample size required for both test and control group is',ceiling(results$n))
         }
         cat(msg)
         cat('\n\n')
-        cat('Details:\n')
-        results
+        #cat('Details:\n')
+        #results
       }else if(test_type=='two sample t-test'){
         inFile <- input$testfile
         if (is.null(inFile)){
@@ -117,43 +124,48 @@ shinyServer(function(input, output){
           msg<-paste('No difference between test and control group at all!')
           
         }else if(calcVal =='significant level(two-sided)'){
-          results<-pwr.t2n.test(n1 = n1,n2 = n2,d = d,sig.level=sig, power=pwr)
-          if(results$sig.level<sig.thres){
+          #results<-pwr.t2n.test(n1 = n1,n2 = n2,d = d,sig.level=sig, power=0)
+          results <- t.test(x,y,conf.level=1-sig.thres,alternative = "two.sided")
+          if(results$p.value<sig.thres){
             if(d > 0){
               lift <- round((mean(x)-mean(y))/mean(y)*100,1)
-              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%')
+              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%. \n P-value is',results$p.value)
             }else{
               drop <- round((mean(y)-mean(x))/mean(y)*100,1)
-              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%')       
+              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%. \n P-value is',results$p.value)       
             }            
           }else{
             sample.needed <- ceiling(pwr.t.test(d=d,power=pwr,sig.level=sig.thres)$n)
-            msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group!')
+            msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
           }
         }else if(calcVal =='significant level(one-sided)'){
           if(d>0){
-            results <- pwr.t2n.test(d = d , n1 = n1 , n2 = n2, sig.level = sig, power = pwr,alternative = 'greater')
-            if(results$sig.level<sig.thres){
-              msg='Test group has significantly higher average value'
+            #results <- pwr.t2n.test(d = d , n1 = n1 , n2 = n2, sig.level = sig, power = 0,alternative = 'greater')
+            results <- t.test(x,y,conf.level=1-sig.thres,alternative = "greater")
+            if(results$p.value<sig.thres){
+              lift <- round((mean(x)-mean(y))/mean(y)*100,1)
+              msg=paste('Test group has significantly higher value! \n The lift is',lift,'%. \n P-value is',results$p.value)
             }else{
               sample.needed <- ceiling(pwr.t.test(d=d,power=pwr,sig.level=sig.thres,alternative = 'greater')$n)
-              msg=paste('There is no siginificant increase in test group.\n Require',sample.needed,'samples in both test and control group!')
+              msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
             }
           }else{
-            results <- pwr.t2n.test(d = d , n1 = n1 , n2 = n2, sig.level = sig, power = pwr,alternative = 'less')
-            if(results$sig.level<sig.thres){
-              msg='Test group has significantly lower average value'
+            #results <- pwr.t2n.test(d = d , n1 = n1 , n2 = n2, sig.level = sig, power = 0,alternative = 'less')
+            results <- t.test(x,y,conf.level=1-sig.thres,alternative = "less")
+            if(results$p.value<sig.thres){
+              drop <- round((mean(y)-mean(x))/mean(y)*100,1)
+              msg=paste('Test group has siginificantly lower value! \n The drop is',drop,'%. \n P-value is',results$p.value)       
             }else{
               sample.needed <- ceiling(pwr.t.test(d = d,power=pwr,sig.level=sig.thres,alternative = 'less')$n)
-              msg=paste('There is no siginificant decrease in test group. \n Require',sample.needed,'samples in both test and control group!')
+              msg=paste('There is no significant difference between test and control.\n Require ',sample.needed,'samples in both test and control group with', pwr*100,'% power!')
             }
           }      
-        }else if(calcVal =='power'){
-          results <- pwr.t2n.test(d = d , n1 =n1 , n2=n2, sig.level = sig, power = pwr)
-          msg=paste('The power is',results$power)
-        }else if(calcVal =='sample size'){
-          results <- pwr.t.test(d = d , sig.level = sig, power = pwr)
-          msg=paste('Sample size required for both test and control group is',ceiling(results$n))
+          #}else if(calcVal =='power'){
+          #  results <- pwr.t2n.test(d = d , n1 =n1 , n2=n2, sig.level = sig, power = pwr)
+          #  msg=paste('The power is',results$power)
+          #}else if(calcVal =='sample size'){
+          #  results <- pwr.t.test(d = ES , sig.level = sig, power = pwr)
+          #  msg=paste('Sample size required for both test and control group is',ceiling(results$n))
         }
         cat(msg)
         cat('\n\n')
@@ -168,16 +180,39 @@ shinyServer(function(input, output){
         }
         
         cat('\n')
-        cat('details:')
-        print(results)
+        #cat('details:')
+        #print(results)
         cat('test group data statistics:\n')
         print(summary(x))
         cat('control group data statistics:\n')
         print(summary(y))        
+      }else if(test_type=='power analysis'){
+        if(power_test == 'proportion test'){
+          if(calcVal =='significant level(two-sided)'){
+            results <- pwr.2p.test(h =ES , sig.level = sig.thres, power = pwr, alternative = 'two.sided')
+          }else if(calcVal =='significant level(one-sided)'){
+            if(ES>0){
+              results <- pwr.2p.test(h =ES , sig.level = sig.thres, power = pwr, alternative = 'greater')
+            }else{
+              results <- pwr.2p.test(h =ES , sig.level = sig.thres, power = pwr, alternative = 'less')
+            }
+          }
+          msg=paste('Sample size required for both test and control group is',ceiling(results$n))
+        }else if(power_test=='t test'){
+          if(calcVal =='significant level(two-sided)'){
+            results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'two.sided')
+          }else if(calcVal =='significant level(one-sided)'){
+            if(ES>0){
+              results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'greater')
+            }else{
+              results <- pwr.t.test(d = ES , sig.level = sig.thres, power = pwr, alternative = 'less')
+            }
+            msg=paste('Sample size required for both test and control group is',ceiling(results$n))
+          }
+        }
+        cat(msg)
       }
-      
     })
-    
   })#end of traditional statistical test
   
   #winning prob
@@ -279,7 +314,7 @@ shinyServer(function(input, output){
       }else{
         head(testdata <- read.csv(inFile$datapath, header = input$header,sep = input$sep, quote = input$quote))
       }
-        
+      
       
     }
     
